@@ -117,15 +117,12 @@ void render( STIPPLER_HANDLE stippler, const Voronoi::StipplingParameters &param
 
 	if ( parameters.outputTsp ) {
 		unsigned long index = 1;
-		stringstream pointcountstream;
-		stringstream widthstream;
-		stringstream heightstream;
 		stringstream formatstream;
 
-		pointcountstream << format("%d") % parameters.points;
-		widthstream << format("%d") % (w * 100);
-		heightstream << format("%d") % (h * 100);
-		formatstream << format(" %%%ii %%%ii %%%ii") % pointcountstream.str().length() % widthstream.str().length() % heightstream.str().length();
+		formatstream << format(" %%%ii %%%ii %%%ii")
+			% floor(log10(parameters.points) + 1)
+			% floor(log10(w * 100) + 1)
+			% floor(log10(h * 100) + 1);
 
 		outputStream << format("NAME: %s") % parameters.outputFile.c_str() << endl;
 		outputStream << "TYPE: TSP" << endl;
