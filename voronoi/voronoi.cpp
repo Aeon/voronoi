@@ -154,8 +154,14 @@ void render( STIPPLER_HANDLE stippler, const Voronoi::StipplingParameters &param
 				iter->r = iter->g = iter->b = 0;
 			}
 
-			outputStream << "<circle cx=\"" << iter->x << "\" cy=\"" << iter->y << "\" r=\"" << radius << "\" fill=\"rgb(" << (unsigned int)iter->r << "," << (unsigned int)iter->g << "," << (unsigned int)iter->b << ")\" />" << endl;
-
+			outputStream <<
+				format("<circle cx=\"%f\" cy=\"%f\" r=\"%f\" fill=\"rgb(%i,%i,%i)\" />")
+				% iter->x
+				% iter->y
+				% radius
+				% round(iter->r)
+				% round(iter->g)
+				% round(iter->b) << endl;
 		}
 		outputStream << "</svg>" << endl;
 	}
