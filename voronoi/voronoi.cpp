@@ -55,7 +55,7 @@ void write_configuration( std::ostream &output, const Voronoi::StipplingParamete
 	using std::abs;
 	using std::numeric_limits;
 
-	output << "Generating " << parameters.points << " stipples." << endl;
+	output << "Generating " << parameters.points << " stipples.\n";
 	output << "Options: ";
 	if ( parameters.useColour ) {
 		output << "Coloured stipples";
@@ -110,10 +110,11 @@ void render( STIPPLER_HANDLE stippler, const Voronoi::StipplingParameters &param
 	unsigned long w = png->w, h = png->h;
 	PNG::freePng(png);
 
-	outputStream << "<?xml version=\"1.0\" ?>" << endl;
-	outputStream << "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" << endl;
-	outputStream << "<svg width=\"" << w << "\" height=\"" << h << "\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\">" << endl;
-	
+	outputStream << 
+		"<?xml version=\"1.0\" ?>\n"
+		"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
+		"<svg width=\"" << w << "\" height=\"" << h << "\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\">\n";
+
 	for ( vector<StipplePoint>::iterator iter = points.begin(); iter != points.end(); ++iter) {
 		float radius = parameters.sizingFactor;
 		if ( parameters.fixedRadius ) {
@@ -126,9 +127,20 @@ void render( STIPPLER_HANDLE stippler, const Voronoi::StipplingParameters &param
 			iter->r = iter->g = iter->b = 0;
 		}
 
-		outputStream << "<circle cx=\"" << iter->x << "\" cy=\"" << iter->y << "\" r=\"" << radius << "\" fill=\"rgb(" << (unsigned int)iter->r << "," << (unsigned int)iter->g << "," << (unsigned int)iter->b << ")\" />" << endl;
+		outputStream <<
+			"<circle "
+				"cx=\"" << iter->x << "\" "
+				"cy=\"" << iter->y << "\" "
+				"r=\"" << radius << "\" "
+				"fill=\"rgb("
+					<< (unsigned int)iter->r
+					<< ","
+					<< (unsigned int)iter->g
+					<< ","
+					<< (unsigned int)iter->b
+				<< ")\" />\n";
 	}
-	outputStream << "</svg>" << endl;
+	outputStream << "</svg>";
 
 	outputStream.close();
 }
