@@ -127,11 +127,12 @@ void render( STIPPLER_HANDLE stippler, const Voronoi::StipplingParameters &param
 
 		unsigned long index = 1;
 
-		outputStream << format("NAME: %s") % parameters.outputFile.c_str() << endl;
-		outputStream << "TYPE: TSP" << endl;
-		outputStream << format("DIMENSION: %i") % ((w > h ? w : h) * 100) << endl;
-		outputStream << "EDGE_WEIGHT_TYPE: EUC_2D" << endl;
-		outputStream << "NODE_COORD_SECTION" << endl;
+		outputStream <<
+			"NAME: " << parameters.outputFile.c_str() << '\n' <<
+			"TYPE: TSP\n"
+			"DIMENSION: " << ((w > h ? w : h) * 100) << '\n' <<
+			"EDGE_WEIGHT_TYPE: EUC_2D\n"
+			"NODE_COORD_SECTION\n";
 
 		outputStream << setiosflags(ios::right) << setfill(' ');
 		for ( vector<StipplePoint>::iterator iter = points.begin(); iter != points.end(); ++iter, ++index) {
