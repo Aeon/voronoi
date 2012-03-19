@@ -51,7 +51,12 @@ THE SOFTWARE.
 // local
 #include "parse_arguments.h"
 
+using namespace std;
 using namespace boost;
+
+inline unsigned numDigits(int x) {
+	return static_cast<unsigned>(floor(log10(x) + 1));
+}
 
 void write_configuration( std::ostream &output, const Voronoi::StipplingParameters &parameters ) {
 	using std::endl;
@@ -116,13 +121,12 @@ void render( STIPPLER_HANDLE stippler, const Voronoi::StipplingParameters &param
 	PNG::freePng(png);
 
 	if ( parameters.outputTsp ) {
-		unsigned long index = 1;
-		stringstream formatstream;
 
-		formatstream << format(" %%%ii %%%ii %%%ii")
-			% floor(log10(parameters.points) + 1)
-			% floor(log10(w * 100) + 1)
-			% floor(log10(h * 100) + 1);
+		const unsigned pw = numDigits(parameters.points) + 1,
+			ww = numDigits(w * 100) + 1,
+			hw = numDigits(h * 100) + 1;
+
+		unsigned long index = 1;
 
 		outputStream << format("NAME: %s") % parameters.outputFile.c_str() << endl;
 		outputStream << "TYPE: TSP" << endl;
@@ -130,10 +134,12 @@ void render( STIPPLER_HANDLE stippler, const Voronoi::StipplingParameters &param
 		outputStream << "EDGE_WEIGHT_TYPE: EUC_2D" << endl;
 		outputStream << "NODE_COORD_SECTION" << endl;
 
+		outputStream << setiosflags(ios::right) << setfill(' ');
 		for ( vector<StipplePoint>::iterator iter = points.begin(); iter != points.end(); ++iter, ++index) {
-			outputStream << format(formatstream.str()) % index % round(iter->x * 100) % round(iter->y * 100) << endl;
+			outputStream << setw(pw) << index << setw(ww) << round(iter->x * 100) << setw(hw) << round(iter->y * 100) << '\n';
 		}
-		outputStream << "EOF" << endl;
+		outputStream << "EOF" << '\n';
+
 	} else {
 		outputStream << "<?xml version=\"1.0\" ?>" << endl;
 		outputStream << "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" << endl;
