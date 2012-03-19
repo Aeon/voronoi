@@ -38,13 +38,17 @@ void showSamples() {
 	using std::cout;
 	using std::endl;
 
-	cout << "Sample usages" << endl << endl;
-	cout << "  voronoi [input] [output]" << endl;
-	cout << "\tCreates a stipple SVG image named [output] from [input] image with 4000\n\tstipple points in black and white." << endl;
-	cout << "  voronoi -s 16000 [input] [output]" << endl;
-	cout << "\tCreates a stipple SVG image named [output] from [input] image with\n\t16000 stipple points in black and white." << endl;
-	cout << "  voronoi -c [input] [output]" << endl;
-	cout << "\tCreates a stipple SVG image named [output] from [input] image with 4000\n\tstipple points in colour." << endl;
+	cout <<
+		"Sample usages\n"
+		"  voronoi [input] [output]\n"
+		"\tCreates a stipple SVG image named [output] from [input] image with 4000\n"
+		"\tstipple points in black and white.\n"
+		"  voronoi -s 16000 [input] [output]\n"
+		"\tCreates a stipple SVG image named [output] from [input] image with\n"
+		"\t16000 stipple points in black and white.\n"
+		"  voronoi -c [input] [output]\n"
+		"\tCreates a stipple SVG image named [output] from [input] image with 4000\n"
+		"\tstipple points in colour.";
 	cout << endl;
 }
 
@@ -100,9 +104,9 @@ std::auto_ptr<Voronoi::StipplingParameters> parseArguments( int argc, char *argv
 
 		if ( help_variables.count( "help" ) > 0 ) {
 			showSamples();
-			cout << requiredOpts << endl;
-			cout << basicOpts << endl;
-			cout << advancedOpts << endl;
+			cout << requiredOpts << '\n'
+				<< basicOpts << '\n'
+				<< advancedOpts << endl;
 
 			return auto_ptr<Voronoi::StipplingParameters>( NULL );
 		}
@@ -143,10 +147,11 @@ std::auto_ptr<Voronoi::StipplingParameters> parseArguments( int argc, char *argv
 		return params;
 	} catch ( exception const &e ) {
 		cerr << e.what() << endl;
-		cout << endl;
+
+		cout << '\n';
 		showSamples();
+		cout << "\nFor more information invoke help via \"voronoi --help\".\n";
 		cout << endl;
-		cout << "For more information invoke help via \"voronoi --help\"." << endl;
 
 		throw exception();
 	}

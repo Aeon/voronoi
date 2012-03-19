@@ -63,7 +63,7 @@ void write_configuration( std::ostream &output, const Voronoi::StipplingParamete
 	using std::abs;
 	using std::numeric_limits;
 
-	output << "Generating " << parameters.points << " stipples." << endl;
+	output << "Generating " << parameters.points << " stipples.\n";
 	output << "Options: ";
 	if ( parameters.useColour ) {
 		output << "Coloured stipples";
@@ -121,7 +121,6 @@ void render( STIPPLER_HANDLE stippler, const Voronoi::StipplingParameters &param
 	PNG::freePng(png);
 
 	if ( parameters.outputTsp ) {
-
 		const unsigned pw = numDigits(parameters.points) + 1,
 			ww = numDigits(w * 100) + 1,
 			hw = numDigits(h * 100) + 1;
@@ -138,12 +137,13 @@ void render( STIPPLER_HANDLE stippler, const Voronoi::StipplingParameters &param
 		for ( vector<StipplePoint>::iterator iter = points.begin(); iter != points.end(); ++iter, ++index) {
 			outputStream << setw(pw) << index << setw(ww) << round(iter->x * 100) << setw(hw) << round(iter->y * 100) << '\n';
 		}
-		outputStream << "EOF" << '\n';
+		outputStream << "EOF";
 
 	} else {
-		outputStream << "<?xml version=\"1.0\" ?>" << endl;
-		outputStream << "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" << endl;
-		outputStream << "<svg width=\"" << w << "\" height=\"" << h << "\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\">" << endl;
+		outputStream << 
+			"<?xml version=\"1.0\" ?>\n"
+			"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
+			"<svg width=\"" << w << "\" height=\"" << h << "\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\">\n";
 
 		for ( vector<StipplePoint>::iterator iter = points.begin(); iter != points.end(); ++iter) {
 			float radius = parameters.sizingFactor;
@@ -158,17 +158,22 @@ void render( STIPPLER_HANDLE stippler, const Voronoi::StipplingParameters &param
 			}
 
 			outputStream <<
-				format("<circle cx=\"%f\" cy=\"%f\" r=\"%f\" fill=\"rgb(%i,%i,%i)\" />")
-				% iter->x
-				% iter->y
-				% radius
-				% round(iter->r)
-				% round(iter->g)
-				% round(iter->b) << endl;
+				"<circle "
+					"cx=\"" << iter->x << "\" "
+					"cy=\"" << iter->y << "\" "
+					"r=\"" << radius << "\" "
+					"fill=\"rgb("
+						<< (unsigned int)iter->r
+						<< ","
+						<< (unsigned int)iter->g
+						<< ","
+						<< (unsigned int)iter->b
+					<< ")\" />\n";
 		}
-		outputStream << "</svg>" << endl;
+		outputStream << "</svg>";
 	}
 
+	outputStream << endl;
 	outputStream.close();
 }
 
