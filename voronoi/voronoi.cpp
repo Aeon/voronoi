@@ -40,6 +40,7 @@ THE SOFTWARE.
 
 // boost
 #include <boost/timer.hpp>
+#include <boost/format.hpp>
 
 // PNG library
 #include <picopng.h>
@@ -49,6 +50,8 @@ THE SOFTWARE.
 
 // local
 #include "parse_arguments.h"
+
+using namespace boost;
 
 void write_configuration( std::ostream &output, const Voronoi::StipplingParameters &parameters ) {
 	using std::endl;
@@ -94,6 +97,8 @@ void render( STIPPLER_HANDLE stippler, const Voronoi::StipplingParameters &param
 	using std::stringstream;
 	using std::endl;
 	using std::runtime_error;
+	using std::floor;
+	using std::ceil;
 
 	vector<StipplePoint> points(parameters.points);
 	stippler_getStipples(stippler, &points[0]);
@@ -110,25 +115,50 @@ void render( STIPPLER_HANDLE stippler, const Voronoi::StipplingParameters &param
 	unsigned long w = png->w, h = png->h;
 	PNG::freePng(png);
 
-	outputStream << "<?xml version=\"1.0\" ?>" << endl;
-	outputStream << "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" << endl;
-	outputStream << "<svg width=\"" << w << "\" height=\"" << h << "\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\">" << endl;
-	
-	for ( vector<StipplePoint>::iterator iter = points.begin(); iter != points.end(); ++iter) {
-		float radius = parameters.sizingFactor;
-		if ( parameters.fixedRadius ) {
-			radius *= 0.5f; // gives circles with 1px diameter
-		} else {
-			radius *= iter->radius;
-		}
+	if ( parameters.outputTsp ) {
+		unsigned long index = 1;
+		stringstream pointcountstream;
+		stringstream widthstream;
+		stringstream heightstream;
+		stringstream formatstream;
 
-		if ( !parameters.useColour ) {
-			iter->r = iter->g = iter->b = 0;
-		}
+		pointcountstream << format("%d") % parameters.points;
+		widthstream << format("%d") % (w * 100);
+		heightstream << format("%d") % (h * 100);
+		formatstream << format(" %%%ii %%%ii %%%ii") % pointcountstream.str().length() % widthstream.str().length() % heightstream.str().length();
 
-		outputStream << "<circle cx=\"" << iter->x << "\" cy=\"" << iter->y << "\" r=\"" << radius << "\" fill=\"rgb(" << (unsigned int)iter->r << "," << (unsigned int)iter->g << "," << (unsigned int)iter->b << ")\" />" << endl;
+		outputStream << format("NAME: %s") % parameters.outputFile.c_str() << endl;
+		outputStream << "TYPE: TSP" << endl;
+		outputStream << format("DIMENSION: %i") % ((w > h ? w : h) * 100) << endl;
+		outputStream << "EDGE_WEIGHT_TYPE: EUC_2D" << endl;
+		outputStream << "NODE_COORD_SECTION" << endl;
+
+		for ( vector<StipplePoint>::iterator iter = points.begin(); iter != points.end(); ++iter, ++index) {
+			outputStream << format(formatstream.str()) % index % round(iter->x * 100) % round(iter->y * 100) << endl;
+		}
+		outputStream << "EOF" << endl;
+	} else {
+		outputStream << "<?xml version=\"1.0\" ?>" << endl;
+		outputStream << "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" << endl;
+		outputStream << "<svg width=\"" << w << "\" height=\"" << h << "\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\">" << endl;
+
+		for ( vector<StipplePoint>::iterator iter = points.begin(); iter != points.end(); ++iter) {
+			float radius = parameters.sizingFactor;
+			if ( parameters.fixedRadius ) {
+				radius *= 0.5f; // gives circles with 1px diameter
+			} else {
+				radius *= iter->radius;
+			}
+
+			if ( !parameters.useColour ) {
+				iter->r = iter->g = iter->b = 0;
+			}
+
+			outputStream << "<circle cx=\"" << iter->x << "\" cy=\"" << iter->y << "\" r=\"" << radius << "\" fill=\"rgb(" << (unsigned int)iter->r << "," << (unsigned int)iter->g << "," << (unsigned int)iter->b << ")\" />" << endl;
+
+		}
+		outputStream << "</svg>" << endl;
 	}
-	outputStream << "</svg>" << endl;
 
 	outputStream.close();
 }

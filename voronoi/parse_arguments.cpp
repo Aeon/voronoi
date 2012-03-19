@@ -79,6 +79,7 @@ std::auto_ptr<Voronoi::StipplingParameters> parseArguments( int argc, char *argv
 		( "fixed-radius,f", "Fixed radius stipple points imply a significant loss of tonal properties" )
 		( "sizing-factor,z", value< float >()->default_value(1.0f, "1.0"), "The final stipple radius is multiplied by this factor" )
 		( "subpixels,p", value< int >()->default_value(5, "5"), "Controls the tile size of centroid computations." )
+		( "tsp,x", "Output as TSP file, not SVG." )
 		( "log,l", "Determines output verbosity" );
 
 	positional_options_description positional;
@@ -129,6 +130,7 @@ std::auto_ptr<Voronoi::StipplingParameters> parseArguments( int argc, char *argv
 		params->useColour = vm.count("colour-output") > 0;
 		params->noOverlap = vm.count("no-overlap") > 0;
 		params->fixedRadius = vm.count("fixed-radius") > 0;
+		params->outputTsp = vm.count("tsp") > 0;
 		if (vm["sizing-factor"].as<float>() < 0.0f) {
 			throw runtime_error("Sizing factor parameter must be greater than 0.");
 		}

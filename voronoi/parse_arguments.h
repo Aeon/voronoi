@@ -36,6 +36,7 @@ namespace Voronoi {
 		bool useColour;
 		bool fixedRadius;
 		float sizingFactor;
+		bool outputTsp;
 	};
 }
 
